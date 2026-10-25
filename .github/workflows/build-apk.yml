@@ -1,0 +1,52 @@
+
+name: Build TCL Launcher APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip source
+        run: |
+          unzip TCL_Launcher_Build_Kit.zip
+          unzip TCL_Minimal_TV_Launcher_Source.zip
+          test -f TCL_Minimal_TV_Launcher/settings.gradle
+          test -f TCL_Minimal_TV_Launcher/app/build.gradle
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build APK
+        run: |
+          cd TCL_Minimal_TV_Launcher
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TCL-Minimal-TV-Launcher-APK
+          path: TCL_Minimal_TV_Launcher/app/build/outputs/apk/debug/app-debug.apk
