@@ -19,12 +19,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      
+
       - name: Unzip source
         run: |
-          unzip TCL_Launcher_Build_Kit.zip
-          unzip TCL_Launcher_Build_Kit/TCL_Minimal_TV_Launcher_Source.zip
+          unzip -o TCL_Launcher_Source_Fixed.zip -d .
           test -f TCL_Minimal_TV_Launcher/settings.gradle
           test -f TCL_Minimal_TV_Launcher/app/build.gradle
+          grep -n "class SoftBackground extends Drawable" TCL_Minimal_TV_Launcher/app/src/main/java/com/example/tclminimal/MainActivity.java
 
       - name: Set up Java
         uses: actions/setup-java@v4
